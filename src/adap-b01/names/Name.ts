@@ -18,56 +18,125 @@ export class Name {
     private delimiter: string = DEFAULT_DELIMITER;
     private components: string[] = [];
 
-    /** Expects that all Name components are properly masked */
+    /** 
+     * @methodtype constructor
+     * Expects that all Name components are properly masked 
+     */
     constructor(other: string[], delimiter?: string) {
-        throw new Error("needs implementation or deletion");
+        if (delimiter !== undefined) {
+            this.delimiter = delimiter;
+        }
+        // Store components as-is (they are unmasked)
+        this.components = [...other];
     }
 
     /**
+     * @methodtype conversion-method
      * Returns a human-readable representation of the Name instance using user-set special characters
      * Special characters are not escaped (creating a human-readable string)
      * Users can vary the delimiter character to be used
      */
     public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+        // Simply join unmasked components with the delimiter
+        return this.components.join(delimiter);
     }
 
     /** 
+     * @methodtype conversion-method
      * Returns a machine-readable representation of Name instance using default special characters
      * Machine-readable means that from a data string, a Name can be parsed back in
      * The special characters in the data string are the default characters
      */
     public asDataString(): string {
-        throw new Error("needs implementation or deletion");
+        // Mask each component for the default delimiter, then join
+        return this.components.map(c => this.mask(c, DEFAULT_DELIMITER)).join(DEFAULT_DELIMITER);
     }
 
-    /** Returns properly masked component string */
+    /** 
+     * @methodtype get-method
+     * Returns properly masked component string 
+     */
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        this.assertIsValidIndex(i);
+        return this.components[i];
     }
 
-    /** Expects that new Name component c is properly masked */
+    /** 
+     * @methodtype set-method
+     * Expects that new Name component c is properly masked 
+     */
     public setComponent(i: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.assertIsValidIndex(i);
+        this.components[i] = c;
     }
 
-     /** Returns number of components in Name instance */
-     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+    /**
+     * @methodtype get-method
+     * Returns number of components in Name instance 
+     */
+    public getNoComponents(): number {
+        return this.components.length;
     }
 
-    /** Expects that new Name component c is properly masked */
+    /** 
+     * @methodtype command-method
+     * Expects that new Name component c is properly masked 
+     */
     public insert(i: number, c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.assertIsValidInsertIndex(i);
+        this.components.splice(i, 0, c);
     }
 
-    /** Expects that new Name component c is properly masked */
+    /** 
+     * @methodtype command-method
+     * Expects that new Name component c is properly masked 
+     */
     public append(c: string): void {
-        throw new Error("needs implementation or deletion");
+        this.components.push(c);
     }
 
+    /**
+     * @methodtype command-method
+     */
     public remove(i: number): void {
-        throw new Error("needs implementation or deletion");
+        this.assertIsValidIndex(i);
+        this.components.splice(i, 1);
+    }
+
+    /**
+     * @methodtype helper-method
+     * Masks a string by escaping special characters (delimiter and escape character)
+     */
+    private mask(str: string, delimiter: string): string {
+        let result = '';
+        for (let i = 0; i < str.length; i++) {
+            const char = str[i];
+            // Escape the delimiter and the escape character itself
+            if (char === delimiter || char === ESCAPE_CHARACTER) {
+                result += ESCAPE_CHARACTER + char;
+            } else {
+                result += char;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @methodtype assertion-method
+     */
+    private assertIsValidIndex(i: number): void {
+        if (i < 0 || i >= this.components.length) {
+            throw new Error(`Invalid index: ${i}`);
+        }
+    }
+
+    /**
+     * @methodtype assertion-method
+     */
+    private assertIsValidInsertIndex(i: number): void {
+        if (i < 0 || i > this.components.length) {
+            throw new Error(`Invalid insert index: ${i}`);
+        }
     }
 
 }
